@@ -5,13 +5,19 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "tsc && nodemon ./dist/app.js",
+    "dev": "npm run build && npm run routes && nodemon ./dist/app.js",
     "build": "tsc --build",
+    "routes": "tsoa spec-and-routes",
     "start": "nodemon ./dist/app.js"
   },
   "nodemonConfig": {
-    "ignore": ["node_modules", "dist"],
-    "watch": ["src/**"]
+    "ignore": [
+      "node_modules",
+      "dist"
+    ],
+    "watch": [
+      "src/**"
+    ]
   },
   "author": "",
   "license": "ISC",
@@ -20,12 +26,17 @@
     "dotenv": "^17.2.2",
     "express": "^5.1.0",
     "nodemon": "^3.1.10",
+    "prettier": "^3.6.2",
+    "swagger": "^0.7.5",
+    "swagger-autogen": "^2.23.7",
+    "swagger-ui-express": "^5.0.1",
     "tsoa": "^6.6.0",
     "typescript": "^5.9.2"
   },
   "devDependencies": {
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.3",
-    "@types/node": "^24.5.2"
+    "@types/node": "^24.5.2",
+    "@types/swagger-ui-express": "^4.1.8"
   }
 }
