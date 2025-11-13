@@ -4,7 +4,22 @@
   "controllerPathGlobs": ["src/Controller/*.Controller.ts"],
   "spec": {
     "outputDirectory": "src/config",
-    "specVersion": 3
+    "specVersion": 3,
+    "paths": {
+      "/api/upload/image": {
+        "post": {
+          "consumes": ["multipart/form-data"],
+          "parameters": [
+            {
+              "in": "formData",
+              "name": "images",
+              "required": true,
+              "type": "file"
+            }
+          ]
+        }
+      }
+    }
   },
   "routes": {
     "routesDir": "src/routes",

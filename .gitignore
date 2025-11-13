@@ -4,3 +4,5 @@
 /tsconfig.tsbuildinfo
 /src/routes
 /src/config/swagger.json
+/src/generated/prisma
+/uploads
