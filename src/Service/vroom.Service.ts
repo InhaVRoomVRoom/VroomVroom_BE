@@ -2,6 +2,7 @@ import { storyboard } from '@prisma/client';
 import { DuplicateUserError, NotFoundError } from '../DTO/errorDTO';
 import VroomRepository from '../Repository/vroom.Repository';
 import upload from '../Middleware/upload';
+import { ResponseFromStoryBoard } from '../DTO/vroomDTO';
 
 class VroomService {
   VroomRepository: VroomRepository;
@@ -33,6 +34,20 @@ class VroomService {
     return newBoard;
   };
 
+  public static getStoryBoardService = async (
+    userName: string,
+  ): Promise<ResponseFromStoryBoard> => {
+    const userId = await VroomRepository.getUserId(userName);
+
+    if (userId === null) {
+      throw new NotFoundError(`${userName}는 존재하지 않는 유저입니다.`);
+    }
+
+    const result = await VroomRepository.getStoryBoard(userId);
+
+    return new ResponseFromStoryBoard(result);
+  };
+
   public static uploadImageService = async (
     files: Express.Multer.File[],
     boardId: string,
@@ -55,6 +70,12 @@ class VroomService {
         `${files.length - count}개의 파일 업로드에 실패했습니다.`,
       );
     }
+  };
+
+  public static getImageUrls = async (boardId: string): Promise<string[]> => {
+    const imageUrls: string[] = await VroomRepository.getImageUrls(boardId);
+
+    return imageUrls;
   };
 
   private static verifyUser = async (userName: string): Promise<boolean> => {

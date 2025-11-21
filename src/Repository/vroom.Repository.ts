@@ -2,6 +2,7 @@ import prisma from '../config/prisma.config';
 import { Prisma, storyboard } from '@prisma/client';
 import { UnknownPrismaError } from '../DTO/errorDTO';
 import e from 'express';
+import { StoryBoardToClient } from '../DTO/vroomInterface';
 
 class VroomRepository {
   public static checkUserName = async (userName: string): Promise<number> => {
@@ -67,6 +68,26 @@ class VroomRepository {
     return newBoard;
   };
 
+  public static getStoryBoard = async (
+    userId: string,
+  ): Promise<StoryBoardToClient[]> => {
+    const storyboard = await prisma.storyboard.findMany({
+      where: {
+        user_id: userId,
+      },
+      select: {
+        board_id: true,
+        images: {
+          select: {
+            image_url: true,
+          },
+        },
+      },
+    });
+
+    return storyboard;
+  };
+
   public static uploadImage = async (
     fileNames: string[],
     boardId: string,
@@ -93,6 +114,25 @@ class VroomRepository {
       });
 
     return result;
+  };
+
+  public static getImageUrls = async (boardId: string): Promise<string[]> => {
+    const imageUrls = await prisma.images
+      .findMany({
+        where: {
+          board_id: boardId,
+        },
+        select: {
+          image_url: true,
+        },
+      })
+      .catch((err) => {
+        throw new UnknownPrismaError(err.message);
+      });
+
+    return imageUrls.map((url) => {
+      return url.image_url;
+    });
   };
 }
 

@@ -5,18 +5,36 @@
   "spec": {
     "outputDirectory": "src/config",
     "specVersion": 3,
-    "paths": {
-      "/api/upload/image": {
-        "post": {
-          "consumes": ["multipart/form-data"],
-          "parameters": [
-            {
-              "in": "formData",
-              "name": "images",
+    "specMerging": "recursive",
+    "spec": {
+      "paths": {
+        "/api/upload/image": {
+          "post": {
+            "summary": "이미지 업로드 (수동 명세)",
+            "operationId": "UploadImageManual",
+            "requestBody": {
+              "description": "업로드할 이미지 파일을 선택하세요.",
               "required": true,
-              "type": "file"
+              "content": {
+                "multipart/form-data": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "images": {
+                        "type": "string",
+                        "format": "binary",
+                        "description": "실제 파일 데이터"
+                      },
+                      "boardId": {
+                        "type": "string",
+                        "description": "게시글 ID"
+                      }
+                    }
+                  }
+                }
+              }
             }
-          ]
+          }
         }
       }
     }

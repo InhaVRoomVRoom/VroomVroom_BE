@@ -27,6 +27,7 @@ import VroomService from '../Service/vroom.Service';
 import { storyboard } from '@prisma/client';
 import upload from '../Middleware/upload';
 import { UploadFailError } from '../DTO/errorDTO';
+import { ResponseFromStoryBoard } from '../DTO/vroomDTO';
 
 @Tags('Vroom API')
 @Route('/api')
@@ -132,14 +133,33 @@ export class VroomController extends Controller {
   }
 
   /**
+   * 스토리 반환 API
+   * @param username 스토리보드를 소유한 유저 이름
+   * @returns 스토리보드 정보와 이미지 정보
+   */
+  @Get('/storyboard')
+  @SuccessResponse(200, '스토리보드 조회 성공')
+  public async getStoryBoardController(
+    @Query() username: string,
+  ): Promise<ITsoaSuccessResponse<ResponseFromStoryBoard>> {
+    const userName: string = username || 'noname';
+
+    const result = await VroomService.getStoryBoardService(userName);
+
+    this.setStatus(200);
+    return new TsoaSuccessResponse<ResponseFromStoryBoard>(result);
+  }
+
+  /**
    * 스토리보드 이미지 업로드 API
-   * @
+   * @param body.boardId 이미지가 해당되는 보드 ID
+   * @returns 이미지 url리스트
    */
   @Post('/upload/image')
   @SuccessResponse(201, '이미지 업로드 성공')
   public async uploadImageController(
     @Request() req: ExpressRequest,
-  ): Promise<ITsoaSuccessResponse<string>> {
+  ): Promise<ITsoaSuccessResponse<string[]>> {
     console.log(req.body);
     const result = await this.handleFile(req).catch((err) => {
       throw new UploadFailError(err.message);
@@ -148,8 +168,10 @@ export class VroomController extends Controller {
 
     await VroomService.uploadImageService(result, req.body.boardId);
 
+    const imageUrls = await VroomService.getImageUrls(req.body.boardId);
+
     this.setStatus(201);
-    return new TsoaSuccessResponse<string>('이미지 업로드 성공');
+    return new TsoaSuccessResponse<string[]>(imageUrls);
   }
 
   private handleFile = (request: ExpressRequest): Promise<any> => {
