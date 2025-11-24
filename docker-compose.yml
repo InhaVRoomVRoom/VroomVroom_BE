@@ -26,3 +26,14 @@ services:
     env_file:
       - .env
     restart: always
+
+  mysql:
+    container_name: mysql-container
+    image: mysql:latest
+    ports:
+      - '3306:3306'
+    volumes:
+      - /home/codie/mysql_data:/var/lib/mysql
+    env_file:
+      - .mysql_env
+    restart: always
