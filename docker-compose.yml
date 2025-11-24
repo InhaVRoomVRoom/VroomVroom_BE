@@ -17,7 +17,7 @@ services:
     container_name: vroom-container
     build:
       context: .
-      dockerfile: Dockerfile.optimized
+      dockerfile: Dockerfile
     image: vroom-image
     ports:
       - '3000:3000'
