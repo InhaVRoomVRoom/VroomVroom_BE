@@ -3,6 +3,7 @@ import { DuplicateUserError, NotFoundError } from '../DTO/errorDTO';
 import VroomRepository from '../Repository/vroom.Repository';
 import upload from '../Middleware/upload';
 import { ResponseFromStoryBoard } from '../DTO/vroomDTO';
+import { geminiImage } from '../config/genai';
 
 class VroomService {
   VroomRepository: VroomRepository;
@@ -76,6 +77,15 @@ class VroomService {
     const imageUrls: string[] = await VroomRepository.getImageUrls(boardId);
 
     return imageUrls;
+  };
+
+  public static geminiImageService = async (
+    imageUrl: string,
+    prompt: string,
+  ) => {
+    const result = await geminiImage(imageUrl, prompt);
+
+    return result;
   };
 
   private static verifyUser = async (userName: string): Promise<boolean> => {

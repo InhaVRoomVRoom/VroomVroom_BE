@@ -174,6 +174,21 @@ export class VroomController extends Controller {
     return new TsoaSuccessResponse<string[]>(imageUrls);
   }
 
+  @Post('/upload/ai')
+  @SuccessResponse(201, 'AI 이미지 업로드 성공')
+  public async uploadAiImageController(
+    @Body() body: { image_url: string; boardId: string; prompt: string },
+  ): Promise<ITsoaSuccessResponse<any>> {
+    const result = await VroomService.geminiImageService(
+      body.image_url,
+      body.prompt,
+    ).catch((err) => {
+      console.log(err);
+    });
+
+    return new TsoaSuccessResponse<any>(result);
+  }
+
   private handleFile = (request: ExpressRequest): Promise<any> => {
     const multerArray = upload.array('images');
     return new Promise((resolve, reject) => {

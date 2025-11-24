@@ -21,6 +21,8 @@ RegisterRoutes(app);
 
 app.use('/docs', swaggerUI.serve, swaggerUI.setup(swaggerJson));
 
+app.use('/files_uploaded', express.static('uploads/original'));
+
 app.use(errorMiddleware);
 
 app.listen(process.env.PORT, () => {
