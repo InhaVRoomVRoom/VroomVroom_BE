@@ -22,6 +22,7 @@ RegisterRoutes(app);
 app.use('/docs', swaggerUI.serve, swaggerUI.setup(swaggerJson));
 
 app.use('/files_uploaded', express.static('uploads/original'));
+app.use('/files_processed', express.static('uploads/banana'));
 
 app.use(errorMiddleware);
 

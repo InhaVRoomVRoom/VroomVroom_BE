@@ -1,5 +1,5 @@
 import prisma from '../config/prisma.config';
-import { Prisma, storyboard } from '@prisma/client';
+import { images_image_type, Prisma, storyboard } from '@prisma/client';
 import { UnknownPrismaError } from '../DTO/errorDTO';
 import e from 'express';
 import { StoryBoardToClient } from '../DTO/vroomInterface';
@@ -80,8 +80,12 @@ class VroomRepository {
         images: {
           select: {
             image_url: true,
+            image_type: true,
           },
         },
+      },
+      orderBy: {
+        created_at: 'desc',
       },
     });
 
@@ -91,6 +95,7 @@ class VroomRepository {
   public static uploadImage = async (
     fileNames: string[],
     boardId: string,
+    imageType: images_image_type,
   ): Promise<number> => {
     const result = await prisma
       .$transaction(async (tx) => {
@@ -100,6 +105,7 @@ class VroomRepository {
               return {
                 image_url: fileName,
                 board_id: boardId,
+                image_type: imageType,
               };
             }),
           })

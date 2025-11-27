@@ -62,17 +62,18 @@ const geminiImage = async (
   //console.log(JSON.stringify(response, null, 2));
   //console.log(response.promptFeedback);
 
+  const writeFilePath = `uploads/banana/banana_${imageName}`;
   for (const part of response!.candidates![0]!.content!.parts!) {
     if (part.text) {
       console.log(part.text);
     } else if (part.inlineData) {
       const imageData = part.inlineData.data || '';
       const buffer = Buffer.from(imageData, 'base64');
-      fs.writeFileSync(`uploads/banana/${imageName}`, buffer);
+      fs.writeFileSync(writeFilePath, buffer);
     }
   }
 
-  return `success`;
+  return writeFilePath;
 };
 
 const getMimeType = (imageUrl: string) => {

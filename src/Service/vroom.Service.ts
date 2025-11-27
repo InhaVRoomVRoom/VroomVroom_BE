@@ -64,6 +64,7 @@ class VroomService {
     const count: number = await VroomRepository.uploadImage(
       image_urls,
       boardId,
+      'raw',
     );
 
     if (count !== files.length) {
@@ -82,8 +83,19 @@ class VroomService {
   public static geminiImageService = async (
     imageUrl: string,
     prompt: string,
-  ) => {
+    boardId: string,
+  ): Promise<string> => {
     const result = await geminiImage(imageUrl, prompt);
+
+    if (!result) {
+      throw new Error('gemini error');
+    }
+
+    const url = await VroomRepository.uploadImage(
+      [result],
+      boardId,
+      'converted',
+    );
 
     return result;
   };

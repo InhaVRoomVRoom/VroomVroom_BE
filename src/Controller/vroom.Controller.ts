@@ -182,9 +182,12 @@ export class VroomController extends Controller {
     const result = await VroomService.geminiImageService(
       body.image_url,
       body.prompt,
+      body.boardId,
     ).catch((err) => {
       console.log(err);
     });
+
+    this.setStatus(201);
 
     return new TsoaSuccessResponse<any>(result);
   }
