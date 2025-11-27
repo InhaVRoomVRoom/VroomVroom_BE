@@ -3,19 +3,23 @@ import * as fs from 'node:fs';
 import path from 'node:path';
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY || '';
 
+const default_prompt =
+  '이 이미지를 변환해줘.' + 'VR 컨트롤러를 안보이게 그림에서 삭제해줘.';
+
 const googleAI = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
 
 const geminiImage = async (
   imageUrl: string,
   prompt: string,
 ): Promise<string> => {
-  const imagePath = `uploads/original/${imageUrl}`;
+  const imagePath = imageUrl;
+  const imageName = path.basename(imagePath);
   const imageData = fs.readFileSync(imagePath);
   const base64Image = imageData.toString('base64');
   const mimeType = getMimeType(imageUrl);
 
   const promptInput = [
-    { text: `${prompt}` },
+    { text: default_prompt + `${prompt}` },
     {
       inlineData: {
         mimeType: mimeType,
@@ -26,7 +30,7 @@ const geminiImage = async (
 
   const response = await googleAI.models
     .generateContent({
-      model: 'gemini-2.0-flash',
+      model: 'gemini-2.5-flash-image',
       contents: promptInput,
       config: {
         candidateCount: 1,
@@ -55,7 +59,7 @@ const geminiImage = async (
       throw new Error('gemini error');
     });
 
-  console.log(JSON.stringify(response, null, 2));
+  //console.log(JSON.stringify(response, null, 2));
   //console.log(response.promptFeedback);
 
   for (const part of response!.candidates![0]!.content!.parts!) {
@@ -64,7 +68,7 @@ const geminiImage = async (
     } else if (part.inlineData) {
       const imageData = part.inlineData.data || '';
       const buffer = Buffer.from(imageData, 'base64');
-      fs.writeFileSync('uploads/banana/example.png', buffer);
+      fs.writeFileSync(`uploads/banana/${imageName}`, buffer);
     }
   }
 
