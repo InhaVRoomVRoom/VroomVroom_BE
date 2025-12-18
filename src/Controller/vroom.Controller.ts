@@ -209,11 +209,6 @@ export class VroomController extends Controller {
     return new TsoaSuccessResponse<any>(result);
   }
 
-  /**
-   *
-   * @param request
-   * @returns
-   */
   @Post('/upload/image/ai')
   @SuccessResponse(201, 'AI 이미지 변환 성공')
   public async uploadImageToAiController(
