@@ -5,6 +5,7 @@ import errorMiddleware from './Middleware/error';
 import swaggerUI from 'swagger-ui-express';
 import { RegisterRoutes } from './routes/tsoaRoutes';
 import * as swaggerJson from './config/swagger.json';
+import path from 'node:path';
 
 dotenv.config();
 
@@ -21,8 +22,7 @@ RegisterRoutes(app);
 
 app.use('/docs', swaggerUI.serve, swaggerUI.setup(swaggerJson));
 
-app.use('/files_uploaded', express.static('uploads/original'));
-app.use('/files_processed', express.static('uploads/banana'));
+app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
 
 app.use(errorMiddleware);
 
