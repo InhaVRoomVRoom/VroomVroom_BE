@@ -28,6 +28,7 @@ import { storyboard } from '@prisma/client';
 import upload from '../Middleware/upload';
 import { UploadFailError } from '../DTO/errorDTO';
 import { ResponseFromStoryBoard } from '../DTO/vroomDTO';
+import { isVoidExpression } from 'typescript';
 
 @Tags('Vroom API')
 @Route('/api')
@@ -189,13 +190,13 @@ export class VroomController extends Controller {
    * @param body.boardId 변환 사진을 추가할 보드의 ID 입력
    * @summary 나노바나나 이미지 변환 API
    * @description 나노바나나로 스토리보드에 있는 사진을 원하는 프롬프트로 변환합니다. 최대한 자세할수록 좋습니다.
-   * @returns
+   * @returns 변환 성공된 이미지 url
    */
   @Post('/upload/ai')
   @SuccessResponse(201, 'AI 이미지 업로드 성공')
   public async uploadAiImageController(
     @Body() body: { image_url: string; boardId: string; prompt: string },
-  ): Promise<ITsoaSuccessResponse<any>> {
+  ): Promise<ITsoaSuccessResponse<string>> {
     const result = await VroomService.geminiImageService(
       body.image_url,
       body.prompt,
@@ -204,11 +205,23 @@ export class VroomController extends Controller {
       console.log(err);
     });
 
+    if (result === undefined) {
+      throw new Error('gemini error');
+    }
+
     this.setStatus(201);
 
-    return new TsoaSuccessResponse<any>(result);
+    return new TsoaSuccessResponse<string>(result);
   }
 
+  /**
+   * 스토리보드 이미지 업로드 및 변환 API
+   * @param body.boardId 이미지가 해당되는 보드 imageData
+   * @param body.prompt ai 입력 프롬프트
+   * @summary 스토리보드 이미지 업로드 API
+   * @description 스토리보드에 스크린샷을 첨부합니다. 여러 개의 스크린샷도 가능합니다.
+   * @returns 이미지 url리스트
+   */
   @Post('/upload/image/ai')
   @SuccessResponse(201, 'AI 이미지 변환 성공')
   public async uploadImageToAiController(
