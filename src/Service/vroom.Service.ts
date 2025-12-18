@@ -75,14 +75,14 @@ class VroomService {
   };
 
   public static uploadSingleImageService = async (
-    file: Express.Multer.File,
+    file: Express.Multer.File[],
     boardId: string,
   ): Promise<string> => {
-    if (file === null) {
+    if (file === null || file[0] === undefined) {
       throw new Error('파일이 없습니다.');
     }
 
-    const image_urls = file.path;
+    const image_urls = file[0].path;
 
     const url: string = await VroomRepository.uploadSingleImage(
       image_urls,
