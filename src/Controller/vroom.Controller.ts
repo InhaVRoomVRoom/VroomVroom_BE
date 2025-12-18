@@ -235,7 +235,7 @@ export class VroomController extends Controller {
 
     const imageUrl: string = await VroomService.uploadSingleImageService(
       result,
-      req.body.boardId,
+      req.body.boardId || 'e2d06c7b-9503-4fd1-b316-a759d49e526d',
     );
 
     const aiUrl = await VroomService.geminiImageService(
