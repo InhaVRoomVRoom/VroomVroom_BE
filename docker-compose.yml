@@ -22,7 +22,7 @@ services:
     ports:
       - '3000:3000'
     volumes:
-      - ./app/uploads:/app/uploads
+      - ./uploads:/app/uploads
     env_file:
       - .env
     restart: always
