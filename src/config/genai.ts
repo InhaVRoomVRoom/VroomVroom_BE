@@ -63,6 +63,12 @@ const geminiImage = async (
   //console.log(response.promptFeedback);
 
   const writeFilePath = `uploads/banana/banana_${imageName}`;
+  const dir = path.dirname(writeFilePath);
+
+  // 디렉토리가 없으면 생성 (recursive: true는 상위 폴더까지 생성)
+  if (!fs.existsSync(dir)) {
+    fs.mkdirSync(dir, { recursive: true });
+  }
   for (const part of response!.candidates![0]!.content!.parts!) {
     if (part.text) {
       console.log(part.text);
