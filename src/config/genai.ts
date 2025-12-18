@@ -93,6 +93,8 @@ const geminiImage = async (
   return path.join(relativeWriteDir, `banana_${imageName}`);
 };
 
+const runYourAI = async () => {};
+
 const getMimeType = (imageUrl: string) => {
   const ext = path.extname(imageUrl).toLowerCase();
   switch (ext) {

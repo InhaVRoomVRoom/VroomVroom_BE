@@ -35,6 +35,38 @@
               }
             }
           }
+        },
+        "/api/upload/image/ai": {
+          "post": {
+            "summary": "이미지 업로드 및 ai 변환(수동 명세)",
+            "operationId": "UploadImageToAiManual",
+            "requestBody": {
+              "description": "업로드할 이미지 파일을 선택하세요.",
+              "required": true,
+              "content": {
+                "multipart/form-data": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "images": {
+                        "type": "string",
+                        "format": "binary",
+                        "description": "실제 파일 데이터"
+                      },
+                      "boardId": {
+                        "type": "string",
+                        "description": "게시글 ID"
+                      },
+                      "prompt": {
+                        "type": "string",
+                        "description": "프롬프트"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
         }
       }
     }

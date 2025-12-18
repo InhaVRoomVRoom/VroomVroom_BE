@@ -92,6 +92,34 @@ class VroomRepository {
     return storyboard;
   };
 
+  public static uploadSingleImage = async (
+    fileName: string,
+    boardId: string,
+    imageType: images_image_type,
+  ): Promise<string> => {
+    const result = await prisma
+      .$transaction(async (tx) => {
+        const result = await prisma.images
+          .create({
+            data: {
+              image_type: imageType,
+              image_url: fileName,
+              board_id: boardId,
+            },
+          })
+          .catch((err) => {
+            throw new UnknownPrismaError(err.message);
+          });
+
+        return result.image_url;
+      })
+      .catch((err) => {
+        throw new UnknownPrismaError(err.message);
+      });
+
+    return result;
+  };
+
   public static uploadImage = async (
     fileNames: string[],
     boardId: string,

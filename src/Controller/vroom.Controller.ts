@@ -49,6 +49,8 @@ export class VroomController extends Controller {
   /**
    * 유저 생성 api
    * @param body.name 유저 이름
+   * @sumamry 유저 생성 API
+   * @description 유저 이름을 입력하면 새 유저를 생성합니다. 이미 존재하는 경우 에러를 반환합니다.
    * @returns 성공 메시지
    */
   @Post('/user/new')
@@ -86,6 +88,8 @@ export class VroomController extends Controller {
    * 스토리보드 생성 api
    * @param body.user_name 유저 이름
    * @param body.title 스토리보드 이름
+   * @summary 스토리 보드 생성 API
+   * @description 스토리 보드를 새로 생성합니다.
    * @return 스토리보드 정보
    */
   @Post('/storyboard/new')
@@ -135,6 +139,8 @@ export class VroomController extends Controller {
   /**
    * 스토리 반환 API
    * @param username 스토리보드를 소유한 유저 이름
+   * @summary 유저 스토리보드 조회
+   * @description 유저의 스토리보드 목록을 반환합니다.
    * @returns 스토리보드 정보와 이미지 정보
    */
   @Get('/storyboard')
@@ -152,7 +158,9 @@ export class VroomController extends Controller {
 
   /**
    * 스토리보드 이미지 업로드 API
-   * @param body.boardId 이미지가 해당되는 보드 ID
+   * @param body.boardId 이미지가 해당되는 보드 imageData
+   * @sumamry 스토리보드 이미지 업로드 API
+   * @description 스토리보드에 스크린샷을 첨부합니다. 여러 개의 스크린샷도 가능합니다.
    * @returns 이미지 url리스트
    */
   @Post('/upload/image')
@@ -174,6 +182,15 @@ export class VroomController extends Controller {
     return new TsoaSuccessResponse<string[]>(imageUrls);
   }
 
+  /**
+   * 나노바나나 변환 API
+   * @param body.image_url 변환할 원본 사진 url
+   * @param body.prompt 변환하고 싶은 프롬프트 입력
+   * @param body.boardId 변환 사진을 추가할 보드의 ID 입력
+   * @summary 나노바나나 이미지 변환 API
+   * @description 나노바나나로 스토리보드에 있는 사진을 원하는 프롬프트로 변환합니다. 최대한 자세할수록 좋습니다.
+   * @returns
+   */
   @Post('/upload/ai')
   @SuccessResponse(201, 'AI 이미지 업로드 성공')
   public async uploadAiImageController(
@@ -190,6 +207,37 @@ export class VroomController extends Controller {
     this.setStatus(201);
 
     return new TsoaSuccessResponse<any>(result);
+  }
+
+  /**
+   *
+   * @param request
+   * @returns
+   */
+  @Post('/upload/image/ai')
+  @SuccessResponse(201, 'AI 이미지 변환 성공')
+  public async uploadImageToAiController(
+    @Request() req: ExpressRequest,
+  ): Promise<ITsoaSuccessResponse<string>> {
+    console.log(req.body);
+    const result = await this.handleFile(req).catch((err) => {
+      throw new UploadFailError(err.message);
+    });
+    console.log(result);
+
+    const imageUrl: string = await VroomService.uploadSingleImageService(
+      result,
+      req.body.boardId,
+    );
+
+    const aiUrl = await VroomService.geminiImageService(
+      imageUrl,
+      req.body.prompt,
+      req.body.boardId || 'e2d06c7b-9503-4fd1-b316-a759d49e526d',
+    );
+
+    this.setStatus(201);
+    return new TsoaSuccessResponse<string>(aiUrl);
   }
 
   private handleFile = (request: ExpressRequest): Promise<any> => {
