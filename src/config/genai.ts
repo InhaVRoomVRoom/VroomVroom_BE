@@ -12,9 +12,17 @@ const geminiImage = async (
   imageUrl: string,
   prompt: string,
 ): Promise<string> => {
-  const imagePath = imageUrl;
-  const imageName = path.basename(imagePath);
-  const imageData = fs.readFileSync(imagePath);
+  const absoluteReadPath = path.isAbsolute(imageUrl)
+    ? imageUrl
+    : path.join(process.cwd(), imageUrl);
+
+  console.log('Reading file from:', absoluteReadPath); // 로그로 경로 확인
+
+  if (!fs.existsSync(absoluteReadPath)) {
+    throw new Error(`파일을 찾을 수 없습니다: ${absoluteReadPath}`);
+  }
+
+  const imageData = fs.readFileSync(absoluteReadPath);
   const base64Image = imageData.toString('base64');
   const mimeType = getMimeType(imageUrl);
 
@@ -62,24 +70,27 @@ const geminiImage = async (
   //console.log(JSON.stringify(response, null, 2));
   //console.log(response.promptFeedback);
 
-  const writeFilePath = `uploads/banana/banana_${imageName}`;
-  const dir = path.dirname(writeFilePath);
+  const imageName = path.basename(imageUrl);
+  const relativeWriteDir = 'uploads/banana';
+  const absoluteWriteDir = path.join(process.cwd(), relativeWriteDir);
+  const absoluteWritePath = path.join(absoluteWriteDir, `banana_${imageName}`);
 
-  // 디렉토리가 없으면 생성 (recursive: true는 상위 폴더까지 생성)
-  if (!fs.existsSync(dir)) {
-    fs.mkdirSync(dir, { recursive: true });
+  // 저장 폴더가 없으면 생성
+  if (!fs.existsSync(absoluteWriteDir)) {
+    fs.mkdirSync(absoluteWriteDir, { recursive: true });
   }
+
   for (const part of response!.candidates![0]!.content!.parts!) {
     if (part.text) {
       console.log(part.text);
     } else if (part.inlineData) {
       const imageData = part.inlineData.data || '';
       const buffer = Buffer.from(imageData, 'base64');
-      fs.writeFileSync(writeFilePath, buffer);
+      fs.writeFileSync(absoluteWritePath, buffer);
     }
   }
 
-  return writeFilePath;
+  return path.join(relativeWriteDir, `banana_${imageName}`);
 };
 
 const getMimeType = (imageUrl: string) => {
