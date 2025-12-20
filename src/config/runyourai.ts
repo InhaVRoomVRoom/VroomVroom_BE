@@ -114,62 +114,41 @@ async function comfyUI(userPrompt: string): Promise<string | null> {
     let lastPrintTime = 0;
 
     // 완료 대기 루프
-    while (true) {
-      const elapsed = Date.now() - startTime;
-      if (elapsed > TIMEOUT_MS) {
-        console.log('❌ 타임아웃: 시간이 너무 오래 걸렸습니다.');
-        break;
-      }
-
+    while (Date.now() - startTime < TIMEOUT_MS) {
       const history = await getHistory(promptId);
       const item = history[promptId];
 
-      if (!item) {
-        if (Date.now() - lastPrintTime > 3000) {
-          console.log('⏳ 대기 중... (서버 처리 시작 전)');
-          lastPrintTime = Date.now();
+      if (item) {
+        const imgMeta = findFirstImageMeta(item);
+        if (imgMeta) {
+          const imgBuffer = await downloadImage(
+            imgMeta.filename,
+            imgMeta.subfolder,
+            imgMeta.type,
+          );
+
+          const timestamp = new Date()
+            .toISOString()
+            .replace(/[:.]/g, '-')
+            .slice(0, 19);
+          const savePath = path.join(
+            SAVE_DIR,
+            `comfy_${timestamp}${path.extname(imgMeta.filename) || '.png'}`,
+          );
+
+          fs.writeFileSync(savePath, imgBuffer);
+          console.log(`✨ 저장 완료: ${savePath}`);
+          return savePath; // 성공 시 여기서 경로 반환
         }
-        await new Promise((r) => setTimeout(r, 1000));
-        continue;
       }
 
-      const imgMeta = findFirstImageMeta(item);
-      if (imgMeta) {
-        console.log(`✅ 이미지 발견: ${imgMeta.filename}`);
-
-        const imgBuffer = await downloadImage(
-          imgMeta.filename,
-          imgMeta.subfolder,
-          imgMeta.type,
-        );
-
-        const timestamp = new Date()
-          .toISOString()
-          .replace(/[:.]/g, '-')
-          .slice(0, 19);
-        const ext = path.extname(imgMeta.filename) || '.png';
-        const savePath = path.join(SAVE_DIR, `comfy_${timestamp}${ext}`);
-
-        if (!fs.existsSync(SAVE_DIR)) {
-          fs.mkdirSync(SAVE_DIR, { recursive: true });
-        }
-
-        fs.writeFileSync(savePath, imgBuffer);
-        console.log(`🎉 내 PC 저장 완료: ${savePath}`);
-        return savePath;
-        break;
-      }
-
-      if (Date.now() - lastPrintTime > 3000) {
-        console.log('⏳ 생성 중...');
-        lastPrintTime = Date.now();
-      }
-
+      // 1초 대기 후 다시 확인
       await new Promise((r) => setTimeout(r, 1000));
     }
+
+    throw new Error('생성 시간 초과');
   } catch (error: any) {
     console.error('❌ 오류 발생:', error.message);
-  } finally {
     return null;
   }
 }
