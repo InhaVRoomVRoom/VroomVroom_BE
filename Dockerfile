@@ -2,8 +2,12 @@ FROM node:22
 
 WORKDIR /app
 
-COPY package*.json ./
+RUN apt-get update && \
+    apt-get install -y open-ssh-client \
+    netcat && \
+    rm -rf /var/lib/apt/lists/*
 
+COPY package*.json ./
 RUN npm install
 
 COPY . .
