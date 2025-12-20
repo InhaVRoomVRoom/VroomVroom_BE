@@ -16,8 +16,9 @@ const NEG_DEFAULT =
   'text, watermark, deformed, glitch, noise, noisy, off-center';
 
 // API 프롬프트 로드
-function loadApiPrompt(filePath: string): any {
-  const rawData = fs.readFileSync(filePath, 'utf-8');
+function loadApiPrompt(fileName: string): any {
+  const completePath = path.join(process.cwd() + '/src/config' + fileName);
+  const rawData = fs.readFileSync(completePath, 'utf-8');
   const data = JSON.parse(rawData);
   return data.prompt ? data.prompt : data;
 }
