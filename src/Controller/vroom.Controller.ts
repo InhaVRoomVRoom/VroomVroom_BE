@@ -254,7 +254,7 @@ export class VroomController extends Controller {
    * @summary comfyUI 파노라마 생성 API
    * @param body.prompt 상세 프롬프트 작성
    * @param body.boardId 스토리보드 id
-   * @returns
+   * @returns 변환된 이미지 url
    */
   @Post('/upload/comfy')
   @SuccessResponse(201, 'comfy 이미지 업로드 성공')
