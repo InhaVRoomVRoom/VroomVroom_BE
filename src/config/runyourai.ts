@@ -5,7 +5,7 @@ import readline from 'readline';
 
 // ===== 설정 =====
 const COMFY = 'http://localhost:8188';
-const API_FILE = '360_Panomara_translator_API.json'; // API format 파일명
+const API_FILE = '360_Panorama_translator_API.json'; // API format 파일명
 const SAVE_DIR = path.join(process.cwd(), 'uploads/comfyUI'); // 저장 폴더 (사용자 환경에 맞게 수정)
 const TIMEOUT_MS = 600 * 1000; // 10분
 
