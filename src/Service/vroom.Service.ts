@@ -93,6 +93,19 @@ class VroomService {
     return url;
   };
 
+  public static uploadSingleImageURLService = async (
+    imageUrl: string,
+    boardId: string,
+  ): Promise<string> => {
+    const url: string = await VroomRepository.uploadSingleImage(
+      imageUrl,
+      boardId,
+      'raw',
+    );
+
+    return url;
+  };
+
   public static getImageUrls = async (boardId: string): Promise<string[]> => {
     const imageUrls: string[] = await VroomRepository.getImageUrls(boardId);
 

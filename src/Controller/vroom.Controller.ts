@@ -29,6 +29,7 @@ import upload from '../Middleware/upload';
 import { UploadFailError } from '../DTO/errorDTO';
 import { ResponseFromStoryBoard } from '../DTO/vroomDTO';
 import { isVoidExpression } from 'typescript';
+import comfyUI from '../config/runyourai';
 
 @Tags('Vroom API')
 @Route('/api')
@@ -246,6 +247,33 @@ export class VroomController extends Controller {
 
     this.setStatus(201);
     return new TsoaSuccessResponse<string>(aiUrl);
+  }
+
+  /**
+   * comfyUI로 이미지 생성
+   * @summary comfyUI 파노라마 생성 API
+   * @param body.prompt 상세 프롬프트 작성
+   * @param body.boardId 스토리보드 id
+   * @returns
+   */
+  @Post('/upload/comfy')
+  @SuccessResponse(201, 'comfy 이미지 업로드 성공')
+  public async uploadComfyImageController(
+    @Body() body: { prompt: string; boardId: string },
+  ): Promise<ITsoaSuccessResponse<string>> {
+    const resultURL: string | null = await comfyUI(body.prompt);
+
+    if (resultURL === null) {
+      throw new Error('comfy error');
+    }
+
+    const imageUrl = await VroomService.uploadSingleImageURLService(
+      resultURL,
+      body.boardId || 'e2d06c7b-9503-4fd1-b316-a759d49e526d',
+    );
+
+    this.setStatus(201);
+    return new TsoaSuccessResponse<string>(imageUrl);
   }
 
   private handleFile = (request: ExpressRequest): Promise<any> => {

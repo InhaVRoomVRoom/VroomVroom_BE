@@ -1,0 +1,201 @@
+{
+  "3": {
+    "inputs": {
+      "seed": 1016727396678523,
+      "steps": 20,
+      "cfg": 8,
+      "sampler_name": "euler",
+      "scheduler": "normal",
+      "denoise": 1,
+      "model": ["11", 0],
+      "positive": ["33", 0],
+      "negative": ["34", 0],
+      "latent_image": ["5", 0]
+    },
+    "class_type": "KSampler",
+    "_meta": {
+      "title": "KSampler"
+    }
+  },
+  "4": {
+    "inputs": {
+      "ckpt_name": "juggernautXL_juggXIByRundiffusion.safetensors"
+    },
+    "class_type": "CheckpointLoaderSimple",
+    "_meta": {
+      "title": "체크포인트 로드"
+    }
+  },
+  "5": {
+    "inputs": {
+      "width": 2048,
+      "height": 1024,
+      "batch_size": 1
+    },
+    "class_type": "EmptyLatentImage",
+    "_meta": {
+      "title": "빈 잠재 이미지"
+    }
+  },
+  "8": {
+    "inputs": {
+      "samples": ["3", 0],
+      "vae": ["12", 0]
+    },
+    "class_type": "VAEDecode",
+    "_meta": {
+      "title": "VAE 디코드"
+    }
+  },
+  "10": {
+    "inputs": {
+      "lora_name": "360RedmondResized.safetensors",
+      "strength_model": 0.5,
+      "strength_clip": 1,
+      "model": ["4", 0],
+      "clip": ["4", 1]
+    },
+    "class_type": "LoraLoader",
+    "_meta": {
+      "title": "LoRA 로드"
+    }
+  },
+  "11": {
+    "inputs": {
+      "tiling": "x_only",
+      "copy_model": "Modify in place",
+      "model": ["10", 0]
+    },
+    "class_type": "SeamlessTile",
+    "_meta": {
+      "title": "Seamless Tile"
+    }
+  },
+  "12": {
+    "inputs": {
+      "tiling": "x_only",
+      "copy_vae": "Make a copy",
+      "vae": ["4", 2]
+    },
+    "class_type": "MakeCircularVAE",
+    "_meta": {
+      "title": "Make Circular VAE"
+    }
+  },
+  "13": {
+    "inputs": {
+      "upscale_by": 4,
+      "seed": 856065702991763,
+      "steps": 40,
+      "cfg": 6,
+      "sampler_name": "euler",
+      "scheduler": "normal",
+      "denoise": 0.6,
+      "mode_type": "None",
+      "tile_width": 1024,
+      "tile_height": 1024,
+      "mask_blur": 8,
+      "tile_padding": 32,
+      "seam_fix_mode": "None",
+      "seam_fix_denoise": 1,
+      "seam_fix_width": 64,
+      "seam_fix_mask_blur": 8,
+      "seam_fix_padding": 16,
+      "force_uniform_tiles": true,
+      "tiled_decode": false,
+      "image": ["8", 0],
+      "model": ["11", 0],
+      "positive": ["33", 0],
+      "negative": ["34", 0],
+      "vae": ["12", 0],
+      "upscale_model": ["14", 0]
+    },
+    "class_type": "UltimateSDUpscale",
+    "_meta": {
+      "title": "Ultimate SD Upscale"
+    }
+  },
+  "14": {
+    "inputs": {
+      "model_name": "RealESRGAN_x4plus.pth"
+    },
+    "class_type": "UpscaleModelLoader",
+    "_meta": {
+      "title": "업스케일 모델 로드"
+    }
+  },
+  "16": {
+    "inputs": {
+      "max_width": 4096,
+      "images": ["13", 0]
+    },
+    "class_type": "PanoramaViewerNode",
+    "_meta": {
+      "title": "Preview 360 Panorama"
+    }
+  },
+  "20": {
+    "inputs": {
+      "images": ["8", 0]
+    },
+    "class_type": "PreviewImage",
+    "_meta": {
+      "title": "이미지 미리보기"
+    }
+  },
+  "21": {
+    "inputs": {
+      "format": "WEBP",
+      "quality": 90,
+      "resize_factor": 1,
+      "compression_level": 8,
+      "save_image": false,
+      "output_prefix": "compressed_",
+      "output_path": "E:\\00GoogleDrive\\00SDOutput",
+      "images": ["13", 0]
+    },
+    "class_type": "ImageCompressor",
+    "_meta": {
+      "title": "🐟Image Compressor"
+    }
+  },
+  "24": {
+    "inputs": {
+      "text_0": "Compression results:\n\nE:\\00GoogleDrive\\00SDOutput\\compressed_20250213_131601_0002.webp: 27.12MB -> 1.11MB",
+      "text": ["21", 0]
+    },
+    "class_type": "ShowText|pysssss",
+    "_meta": {
+      "title": "Show Text 🐍"
+    }
+  },
+  "26": {
+    "inputs": {
+      "images": ["13", 0]
+    },
+    "class_type": "PreviewImage",
+    "_meta": {
+      "title": "이미지 미리보기"
+    }
+  },
+  "33": {
+    "inputs": {
+      "text": "A \"Death Star\" of star wars floating in the vastness of space. The background is filled with countless stars, distant galaxies, and several visible moons and planets, creating a breathtaking cosmic scene. 360, 360 view",
+      "clip": ["10", 1]
+    },
+    "class_type": "CLIP Text Encode (Auto Translate)",
+    "_meta": {
+      "title": "CLIP Text Encode (Auto Translate)"
+    }
+  },
+  "34": {
+    "inputs": {
+      "text": "text, watermark, text, watermark, deformed, glitch, noise, noisy, off-center",
+      "clip": ["10", 1]
+    },
+    "class_type": "CLIP Text Encode (Auto Translate)",
+    "_meta": {
+      "title": "CLIP Text Encode (Auto Translate)"
+    }
+  }
+}
