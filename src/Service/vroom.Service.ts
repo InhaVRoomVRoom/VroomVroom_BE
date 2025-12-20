@@ -100,7 +100,7 @@ class VroomService {
     const url: string = await VroomRepository.uploadSingleImage(
       imageUrl,
       boardId,
-      'raw',
+      'panorama',
     );
 
     return url;
