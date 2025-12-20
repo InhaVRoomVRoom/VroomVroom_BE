@@ -3,8 +3,9 @@ FROM node:22
 WORKDIR /app
 
 RUN apt-get update && \
-    apt-get install -y open-ssh-client \
-    netcat && \
+    apt-get install -y openssh-client \
+    netcat-openbsd \
+    bash && \
     rm -rf /var/lib/apt/lists/*
 
 COPY package*.json ./
