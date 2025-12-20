@@ -138,7 +138,7 @@ async function comfyUI(userPrompt: string): Promise<string | null> {
 
           fs.writeFileSync(savePath, imgBuffer);
           console.log(`✨ 저장 완료: ${savePath}`);
-          return savePath; // 성공 시 여기서 경로 반환
+          return path.join('uploads', 'comfyUI', path.basename(savePath)); // 성공 시 여기서 경로 반환
         }
       }
 
